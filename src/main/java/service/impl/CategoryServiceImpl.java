@@ -1,62 +1,66 @@
-package service.impl; 
+package service.impl;
 
-import java.io.File; 
-import java.util.List; 
-import dao.CategoryDao; 
-import dao.impl.CategoryDaoImpl; 
-import model.Category; 
-import service.CategoryService; 
-import util.Constant;
+import java.util.List;
+import dao.ICategoryDao;
+import dao.impl.CategoryDaoImpl;
+import model.Category;
+import service.ICategoryService;
 
-public class CategoryServiceImpl implements CategoryService { 
-    CategoryDao categoryDao = new CategoryDaoImpl();
-
-    @Override  
-    public void insert(Category category) { 
-        categoryDao.insert(category); 
-    } 
+public class CategoryServiceImpl implements ICategoryService {
+    public ICategoryDao cateDao = new CategoryDaoImpl();
 
     @Override
-    public void edit(Category newCategory) {
-        Category oldCategory = categoryDao.get(newCategory.getId());
-        if (oldCategory != null) {
-            oldCategory.setName(newCategory.getName());
-            if (newCategory.getIcon() != null) {
-                String fileName = oldCategory.getIcon();
-                if (fileName != null) {
-                    File file = new File(Constant.DIR + "/" + fileName);
-                    if (file.exists()) {
-                        file.delete();
-                    }
-                }
-                oldCategory.setIcon(newCategory.getIcon());
-            }
-            categoryDao.edit(oldCategory);
+    public List<Category> findAll() {
+        return cateDao.findAll();
+    }
+
+    @Override
+    public Category findById(int id) {
+        return cateDao.findById(id);
+    }
+
+    @Override
+    public List<Category> searchByName(String keyword) {
+        return cateDao.searchByName(keyword);
+    }
+
+    @Override
+    public void insert(Category category) {
+        Category cate = this.findByCategoryname(category.getCategoryname());
+        if (cate == null) {
+            cateDao.insert(category);
         }
     }
 
-    @Override  
-    public void delete(int id) { 
-        categoryDao.delete(id); 
+    @Override
+    public void update(Category category) {
+        Category cate = this.findById(category.getCategoryid());
+        if (cate != null) {
+            cateDao.update(category);
+        }
     }
 
-    @Override  
-    public Category get(int id) { 
-        return categoryDao.get(id); 
+    @Override
+    public void delete(int id) {
+        try {
+            cateDao.delete(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override  
-    public Category get(String name) { 
-        return categoryDao.get(name); 
+    @Override
+    public int count() {
+        return cateDao.count();
     }
 
-    @Override  
-    public List<Category> getAll() { 
-        return categoryDao.getAll(); 
+    @Override
+    public List<Category> findAll(int page, int pagesize) {
+        return cateDao.findAll(page, pagesize);
     }
 
-    @Override  
-    public List<Category> search(String catename) { 
-        return categoryDao.search(catename); 
+    @Override
+    public Category findByCategoryname(String name) {
+        return cateDao.findByCategoryname(name);
     }
 }

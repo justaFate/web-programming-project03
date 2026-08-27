@@ -2,23 +2,22 @@ package dao.impl;
 
 import java.util.List;
 import config.JPAConfig;
-import dao.ICategoryDao;
+import dao.IVideoDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import model.Category;
+import jakarta.persistence.Query;
+import model.Video;
 
-public class CategoryDaoImpl implements ICategoryDao {
+public class VideoDaoImpl implements IVideoDao {
 
     @Override
-    public void insert(Category category) {
+    public void insert(Video video) {
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
         try {
             trans.begin();
-            enma.persist(category);
+            enma.persist(video);
             trans.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,12 +29,12 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public void update(Category category) {
+    public void update(Video video) {
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
         try {
             trans.begin();
-            enma.merge(category);
+            enma.merge(video);
             trans.commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,16 +46,16 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public void delete(int cateid) throws Exception {
+    public void delete(String videoId) throws Exception {
         EntityManager enma = JPAConfig.getEntityManager();
         EntityTransaction trans = enma.getTransaction();
         try {
             trans.begin();
-            Category category = enma.find(Category.class, cateid);
-            if (category != null) {
-                enma.remove(category);
+            Video video = enma.find(Video.class, videoId);
+            if (video != null) {
+                enma.remove(video);
             } else {
-                throw new Exception("Không tìm thấy Category với ID: " + cateid);
+                throw new Exception("Không tìm thấy Video với ID: " + videoId);
             }
             trans.commit();
         } catch (Exception e) {
@@ -69,35 +68,20 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public Category findById(int cateid) {
+    public Video findById(String videoId) {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
-            return enma.find(Category.class, cateid);
+            return enma.find(Video.class, videoId);
         } finally {
             enma.close();
         }
     }
 
     @Override
-    public Category findByCategoryname(String name) {
-        EntityManager enma = JPAConfig.getEntityManager();
-        String jpql = "SELECT c FROM Category c WHERE c.categoryname = :catename";
-        try {
-            TypedQuery<Category> query = enma.createQuery(jpql, Category.class);
-            query.setParameter("catename", name);
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } finally {
-            enma.close();
-        }
-    }
-
-    @Override
-    public List<Category> findAll() {
+    public List<Video> findAll() {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
-            TypedQuery<Category> query = enma.createNamedQuery("Category.findAll", Category.class);
+            TypedQuery<Video> query = enma.createNamedQuery("Video.findAll", Video.class);
             return query.getResultList();
         } finally {
             enma.close();
@@ -105,10 +89,10 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public List<Category> findAll(int page, int pagesize) {
+    public List<Video> findAll(int page, int pagesize) {
         EntityManager enma = JPAConfig.getEntityManager();
         try {
-            TypedQuery<Category> query = enma.createNamedQuery("Category.findAll", Category.class);
+            TypedQuery<Video> query = enma.createNamedQuery("Video.findAll", Video.class);
             query.setFirstResult(page * pagesize);
             query.setMaxResults(pagesize);
             return query.getResultList();
@@ -118,12 +102,25 @@ public class CategoryDaoImpl implements ICategoryDao {
     }
 
     @Override
-    public List<Category> searchByName(String catname) {
+    public List<Video> searchByTitle(String title) {
         EntityManager enma = JPAConfig.getEntityManager();
-        String jpql = "SELECT c FROM Category c WHERE c.categoryname LIKE :catname";
+        String jpql = "SELECT v FROM Video v WHERE v.title LIKE :title";
         try {
-            TypedQuery<Category> query = enma.createQuery(jpql, Category.class);
-            query.setParameter("catname", "%" + catname + "%");
+            TypedQuery<Video> query = enma.createQuery(jpql, Video.class);
+            query.setParameter("title", "%" + title + "%");
+            return query.getResultList();
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public List<Video> findByCategoryId(int categoryId) {
+        EntityManager enma = JPAConfig.getEntityManager();
+        String jpql = "SELECT v FROM Video v WHERE v.category.categoryid = :categoryId";
+        try {
+            TypedQuery<Video> query = enma.createQuery(jpql, Video.class);
+            query.setParameter("categoryId", categoryId);
             return query.getResultList();
         } finally {
             enma.close();
@@ -133,7 +130,7 @@ public class CategoryDaoImpl implements ICategoryDao {
     @Override
     public int count() {
         EntityManager enma = JPAConfig.getEntityManager();
-        String jpql = "SELECT count(c) FROM Category c";
+        String jpql = "SELECT count(v) FROM Video v";
         try {
             Query query = enma.createQuery(jpql);
             return ((Long) query.getSingleResult()).intValue();
