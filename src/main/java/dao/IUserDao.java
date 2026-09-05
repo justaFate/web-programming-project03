@@ -11,6 +11,9 @@ public interface IUserDao {
     User findByUsername(String username);
     List<User> findAll();
     boolean checkExistUsername(String username);
+    boolean checkExistEmail(String email);
     boolean checkExistPhone(String phone, int excludeUserId);
+    User findByEmail(String email);
+    User findByUsernameOrEmail(String value);
 }
 

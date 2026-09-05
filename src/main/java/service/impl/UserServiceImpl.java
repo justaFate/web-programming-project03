@@ -90,13 +90,124 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
+    @Override
+    public User findByUsernameOrEmail(String value) {
+        return userDao.findByUsernameOrEmail(value);
+    }
+
+    @Override
     public boolean checkExistUsername(String username) {
         return userDao.checkExistUsername(username);
     }
 
     @Override
+    public boolean checkExistEmail(String email) {
+        return userDao.checkExistEmail(email);
+    }
+
+    @Override
     public boolean checkExistPhone(String phone, int excludeUserId) {
         return userDao.checkExistPhone(phone, excludeUserId);
+    }
+
+    @Override
+    public boolean register(User user) {
+        try {
+            user.setStatus(0); // Chưa kích hoạt
+            String otp = util.EmailUtil.generateOtp(6);
+            user.setCode(otp);
+            if (user.getImages() == null || user.getImages().trim().isEmpty()) {
+                user.setImages("avatar.png");
+            }
+            userDao.insert(user);
+
+            String subject = "[Bài Tập 03] Mã OTP kích hoạt tài khoản";
+            String body = "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;'>"
+                    + "<h2 style='color: #0d6efd;'>Kích Hoạt Tài Khoản</h2>"
+                    + "<p>Xin chào <strong>" + user.getFullname() + "</strong>,</p>"
+                    + "<p>Cảm ơn bạn đã đăng ký tài khoản tại hệ thống của chúng tôi.</p>"
+                    + "<p>Mã OTP kích hoạt tài khoản của bạn là:</p>"
+                    + "<div style='background: #f1f5f9; padding: 12px; border-radius: 6px; text-align: center; margin: 15px 0;'>"
+                    + "<span style='font-size: 26px; font-weight: bold; letter-spacing: 5px; color: #0d6efd;'>" + otp + "</span>"
+                    + "</div>"
+                    + "<p style='color: #6c757d; font-size: 13px;'>Mã xác thực có hiệu lực trong 5 phút. Vui lòng không cung cấp mã này cho người khác.</p>"
+                    + "</div>";
+
+            util.EmailUtil.sendEmail(user.getEmail(), subject, body);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activateAccount(String email, String otp) {
+        if (email == null || otp == null) return false;
+        try {
+            User user = userDao.findByEmail(email.trim());
+            if (user != null && otp.trim().equals(user.getCode())) {
+                user.setStatus(1); // Kích hoạt thành công
+                user.setCode(null); // Xóa OTP
+                userDao.update(user);
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean sendForgotPasswordOtp(String emailOrUsername) {
+        if (emailOrUsername == null || emailOrUsername.trim().isEmpty()) return false;
+        try {
+            User user = userDao.findByUsernameOrEmail(emailOrUsername.trim());
+            if (user != null && user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+                String otp = util.EmailUtil.generateOtp(6);
+                user.setCode(otp);
+                userDao.update(user);
+
+                String subject = "[Bài Tập 03] Mã OTP đặt lại mật khẩu";
+                String body = "<div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;'>"
+                        + "<h2 style='color: #dc3545;'>Đặt Lại Mật Khẩu</h2>"
+                        + "<p>Xin chào <strong>" + user.getFullname() + "</strong>,</p>"
+                        + "<p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản: <strong>" + user.getUsername() + "</strong>.</p>"
+                        + "<p>Mã xác thực OTP của bạn là:</p>"
+                        + "<div style='background: #fff5f5; padding: 12px; border-radius: 6px; text-align: center; margin: 15px 0;'>"
+                        + "<span style='font-size: 26px; font-weight: bold; letter-spacing: 5px; color: #dc3545;'>" + otp + "</span>"
+                        + "</div>"
+                        + "<p style='color: #6c757d; font-size: 13px;'>Nếu bạn không yêu cầu điều này, xin vui lòng bỏ qua email.</p>"
+                        + "</div>";
+
+                util.EmailUtil.sendEmail(user.getEmail(), subject, body);
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean resetPassword(String email, String otp, String newPassword) {
+        if (email == null || otp == null || newPassword == null) return false;
+        try {
+            User user = userDao.findByEmail(email.trim());
+            if (user != null && otp.trim().equals(user.getCode())) {
+                user.setPassword(newPassword.trim());
+                user.setCode(null); // Xóa OTP sau khi đổi mật khẩu
+                userDao.update(user);
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 

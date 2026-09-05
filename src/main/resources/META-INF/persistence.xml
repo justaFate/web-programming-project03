@@ -8,6 +8,7 @@
         <class>model.Category</class>
         <class>model.Video</class>
         <class>model.User</class>
+        <class>model.Product</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=ShoppingServiceMVC;encrypt=true;trustServerCertificate=true;loginTimeout=5" />
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />

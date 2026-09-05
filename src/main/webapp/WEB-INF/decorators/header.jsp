@@ -13,14 +13,31 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/home">
                         <i class="fa-solid fa-house me-1"></i> Trang chủ
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/admin/categories">
-                        <i class="fa-solid fa-list me-1"></i> Quản lý Danh mục
+                    <a class="nav-link" href="${pageContext.request.contextPath}/product">
+                        <i class="fa-solid fa-bag-shopping me-1"></i> Sản phẩm
                     </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-screwdriver-wrench me-1"></i> Quản trị
+                    </a>
+                    <ul class="dropdown-menu shadow">
+                        <li>
+                            <a class="dropdown-item" href="${pageContext.request.contextPath}/admin/categories">
+                                <i class="fa-solid fa-layer-group me-2 text-primary"></i>Quản lý Danh mục
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="${pageContext.request.contextPath}/admin/products">
+                                <i class="fa-solid fa-boxes-stacked me-2 text-success"></i>Quản lý Sản phẩm
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/profile">
@@ -29,7 +46,7 @@
                 </li>
             </ul>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2">
                 <c:choose>
                     <c:when test="${not empty sessionScope.username}">
                         <div class="dropdown">
@@ -53,6 +70,9 @@
                         </div>
                     </c:when>
                     <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/register" class="btn btn-outline-light btn-sm">
+                            <i class="fa-solid fa-user-plus me-1"></i> Đăng ký
+                        </a>
                         <a href="${pageContext.request.contextPath}/login" class="btn btn-primary btn-sm">
                             <i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập
                         </a>

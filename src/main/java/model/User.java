@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "users")
 @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u")
 @NamedQuery(name = "User.findByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+@NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +34,10 @@ public class User implements Serializable {
     @Column(name = "fullname", columnDefinition = "nvarchar(100) not null")
     private String fullname;
 
+    @Email(message = "Email không đúng định dạng")
+    @Column(name = "email", columnDefinition = "nvarchar(100) null")
+    private String email;
+
     @Pattern(regexp = "^(0[3|5|7|8|9][0-9]{8})?$", message = "Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09)")
     @Column(name = "phone", columnDefinition = "nvarchar(20) null")
     private String phone;
@@ -42,17 +48,25 @@ public class User implements Serializable {
     @Column(name = "role")
     private int role; // 1: admin, 0: user
 
+    @Column(name = "status")
+    private int status = 1; // 1: active (đã kích hoạt), 0: inactive (chưa kích hoạt qua OTP)
+
+    @Column(name = "code", columnDefinition = "nvarchar(20) null")
+    private String code; // Lưu mã OTP kích hoạt / quên mật khẩu
+
     public User() {
     }
 
-    public User(int id, String username, String password, String fullname, String phone, String images, int role) {
+    public User(int id, String username, String password, String fullname, String email, String phone, String images, int role, int status) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.fullname = fullname;
+        this.email = email;
         this.phone = phone;
         this.images = images;
         this.role = role;
+        this.status = status;
     }
 
     public int getId() {
@@ -109,6 +123,30 @@ public class User implements Serializable {
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
 

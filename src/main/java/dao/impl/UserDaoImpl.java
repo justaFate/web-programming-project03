@@ -125,5 +125,41 @@ public class UserDaoImpl implements IUserDao {
             em.close();
         }
     }
+
+    @Override
+    public boolean checkExistEmail(String email) {
+        if (email == null || email.trim().isEmpty()) return false;
+        return findByEmail(email.trim()) != null;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) return null;
+        EntityManager em = JPAConfig.getEntityManager();
+        try {
+            TypedQuery<User> query = em.createNamedQuery("User.findByEmail", User.class);
+            query.setParameter("email", email.trim());
+            return query.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public User findByUsernameOrEmail(String value) {
+        if (value == null || value.trim().isEmpty()) return null;
+        EntityManager em = JPAConfig.getEntityManager();
+        String jpql = "SELECT u FROM User u WHERE u.username = :val OR u.email = :val";
+        try {
+            TypedQuery<User> query = em.createQuery(jpql, User.class);
+            query.setParameter("val", value.trim());
+            List<User> list = query.getResultList();
+            return list.isEmpty() ? null : list.get(0);
+        } finally {
+            em.close();
+        }
+    }
 }
 

@@ -90,6 +90,12 @@ public class LoginController extends HttpServlet {
         }
 
         if (user != null) { 
+            if (user.getStatus() == 0) {
+                req.getSession().setAttribute("errorMessage", "Tài khoản của bạn chưa được kích hoạt. Vui lòng nhập mã OTP để kích hoạt!");
+                resp.sendRedirect(req.getContextPath() + "/verify-otp?email=" + (user.getEmail() != null ? user.getEmail() : ""));
+                return;
+            }
+
             HttpSession session = req.getSession(true); 
             session.setAttribute("user", user);
             session.setAttribute("username", user.getUsername()); 

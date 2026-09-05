@@ -27,6 +27,14 @@
                         </div>
                     </c:if>
 
+                    <c:if test="${not empty sessionScope.message}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-circle-check me-2"></i>${sessionScope.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <c:remove var="message" scope="session" />
+                    </c:if>
+
                     <form action="${pageContext.request.contextPath}/login" method="POST" class="needs-validation" novalidate>
                         <input type="hidden" name="redirect" value="${not empty redirect ? redirect : param.redirect}" />
                         <div class="mb-3">
@@ -41,8 +49,11 @@
                             </c:if>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="password" class="form-label fw-semibold">Mật khẩu:</label>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="password" class="form-label fw-semibold mb-0">Mật khẩu:</label>
+                                <a href="${pageContext.request.contextPath}/forgot-password" class="small text-decoration-none">Quên mật khẩu?</a>
+                            </div>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
                                 <input type="password" class="form-control ${not empty errors['password'] ? 'is-invalid' : ''}" 
@@ -53,9 +64,16 @@
                             </c:if>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mb-3">
                             <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Đăng nhập
                         </button>
+
+                        <div class="text-center">
+                            <span class="text-muted small">Chưa có tài khoản? </span>
+                            <a href="${pageContext.request.contextPath}/register" class="fw-semibold small text-decoration-none">
+                                <i class="fa-solid fa-user-plus me-1"></i>Đăng ký ngay
+                            </a>
+                        </div>
                     </form>
                 </div>
                 <div class="card-footer bg-light text-center py-2 text-muted small">
