@@ -34,28 +34,33 @@ public class Profile extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false); 
         if (session == null || session.getAttribute("username") == null) { 
-            response.sendRedirect(request.getContextPath() + "/login"); 
+            response.sendRedirect(request.getContextPath() + "/login?redirect=" + request.getRequestURI() + "&msg=require_login"); 
             return;
         }
 
-        String username = (String) session.getAttribute("username");
-        User user = userService.findByUsername(username);
+        try {
+            String username = (String) session.getAttribute("username");
+            User user = userService.findByUsername(username);
 
-        if (user == null) {
-            user = new User();
-            user.setUsername(username);
-            user.setFullname(session.getAttribute("name") != null ? (String) session.getAttribute("name") : username);
-            user.setPassword("123");
-            user.setPhone("0901234567");
-            user.setImages("avatar.png");
-            user.setRole(1);
-            try {
-                userService.insert(user);
-            } catch (Exception ignored) {}
+            if (user == null) {
+                user = new User();
+                user.setUsername(username);
+                user.setFullname(session.getAttribute("name") != null ? (String) session.getAttribute("name") : username);
+                user.setPassword("123");
+                user.setPhone("0901234567");
+                user.setImages("avatar.png");
+                user.setRole(1);
+                try {
+                    userService.insert(user);
+                } catch (Exception ignored) {}
+            }
+
+            request.setAttribute("user", user);
+            session.setAttribute("user", user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("generalError", "Không thể kết nối cơ sở dữ liệu để lấy thông tin: " + e.getMessage());
         }
-
-        request.setAttribute("user", user);
-        session.setAttribute("user", user);
         request.getRequestDispatcher("/views/user/profile.jsp").include(request, response);
     }
 

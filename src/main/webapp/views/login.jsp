@@ -13,6 +13,13 @@
                     <h4 class="mb-0 fw-bold"><i class="fa-solid fa-lock me-2 text-info"></i>Đăng Nhập</h4>
                 </div>
                 <div class="card-body p-4">
+                    <c:if test="${param.msg == 'require_login'}">
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <i class="fa-solid fa-circle-info me-2"></i>Vui lòng đăng nhập để truy cập trang thông tin cá nhân.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
                     <c:if test="${not empty errorMessage}">
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fa-solid fa-circle-exclamation me-2"></i>${errorMessage}
@@ -21,6 +28,7 @@
                     </c:if>
 
                     <form action="${pageContext.request.contextPath}/login" method="POST" class="needs-validation" novalidate>
+                        <input type="hidden" name="redirect" value="${not empty redirect ? redirect : param.redirect}" />
                         <div class="mb-3">
                             <label for="username" class="form-label fw-semibold">Tên đăng nhập:</label>
                             <div class="input-group">

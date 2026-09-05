@@ -50,30 +50,37 @@ public class CategoryController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String url = req.getRequestURI();
-        if (url.contains("/admin/categories")) {
-            List<Category> list = cateService.findAll();
-            req.setAttribute("listcate", list);
-            req.getRequestDispatcher("/views/admin/category-list.jsp").include(req, resp);
-        } else if (url.contains("/admin/category/add")) {
-            req.getRequestDispatcher("/views/admin/category-add.jsp").include(req, resp);
-        } else if (url.contains("/admin/category/edit")) {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Category category = cateService.findById(id);
-            req.setAttribute("cate", category);
-            req.getRequestDispatcher("/views/admin/category-edit.jsp").include(req, resp);
-        } else if (url.contains("/admin/category/delete")) {
-            int id = Integer.parseInt(req.getParameter("id"));
-            try {
+        try {
+            if (url.contains("/admin/categories")) {
+                List<Category> list = cateService.findAll();
+                req.setAttribute("listcate", list);
+                req.getRequestDispatcher("/views/admin/category-list.jsp").include(req, resp);
+            } else if (url.contains("/admin/category/add")) {
+                req.getRequestDispatcher("/views/admin/category-add.jsp").include(req, resp);
+            } else if (url.contains("/admin/category/edit")) {
+                int id = Integer.parseInt(req.getParameter("id"));
                 Category category = cateService.findById(id);
-                if (category != null && category.getImages() != null && !category.getImages().startsWith("http")) {
-                    deleteFile(Constant.DIR + File.separator + category.getImages());
+                req.setAttribute("cate", category);
+                req.getRequestDispatcher("/views/admin/category-edit.jsp").include(req, resp);
+            } else if (url.contains("/admin/category/delete")) {
+                int id = Integer.parseInt(req.getParameter("id"));
+                try {
+                    Category category = cateService.findById(id);
+                    if (category != null && category.getImages() != null && !category.getImages().startsWith("http")) {
+                        deleteFile(Constant.DIR + File.separator + category.getImages());
+                    }
+                    cateService.delete(id);
+                    req.getSession().setAttribute("message", "Đã xóa danh mục thành công!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    req.getSession().setAttribute("errorMessage", "Không thể xóa danh mục: " + e.getMessage());
                 }
-                cateService.delete(id);
-                req.getSession().setAttribute("message", "Đã xóa danh mục thành công!");
-            } catch (Exception e) {
-                e.printStackTrace();
+                resp.sendRedirect(req.getContextPath() + "/admin/categories");
             }
-            resp.sendRedirect(req.getContextPath() + "/admin/categories");
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu hoặc xử lý hệ thống: " + e.getMessage());
+            req.getRequestDispatcher("/views/admin/category-list.jsp").include(req, resp);
         }
     }
 

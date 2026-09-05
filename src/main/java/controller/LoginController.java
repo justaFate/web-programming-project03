@@ -68,14 +68,26 @@ public class LoginController extends HttpServlet {
             errors.put("password", "Vui lòng nhập mật khẩu");
         }
 
+        String redirect = req.getParameter("redirect");
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
             req.setAttribute("username", username);
+            req.setAttribute("redirect", redirect);
             req.getRequestDispatcher("/views/login.jsp").include(req, resp);
             return;
         }
 
-        User user = userService.login(username.trim(), password.trim());
+        User user = null;
+        try {
+            user = userService.login(username.trim(), password.trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("username", username);
+            req.setAttribute("redirect", redirect);
+            req.setAttribute("errorMessage", "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage());
+            req.getRequestDispatcher("/views/login.jsp").include(req, resp);
+            return;
+        }
 
         if (user != null) { 
             HttpSession session = req.getSession(true); 
@@ -87,9 +99,14 @@ public class LoginController extends HttpServlet {
             cookie.setMaxAge(60 * 60 * 24); // 1 ngày
             resp.addCookie(cookie); 
             
-            resp.sendRedirect(req.getContextPath() + "/");
+            if (redirect != null && !redirect.trim().isEmpty() && !redirect.contains("/login")) {
+                resp.sendRedirect(redirect.trim());
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/");
+            }
         } else { 
             req.setAttribute("username", username);
+            req.setAttribute("redirect", redirect);
             req.setAttribute("errorMessage", "Tài khoản hoặc mật khẩu không chính xác");
             req.getRequestDispatcher("/views/login.jsp").include(req, resp);
         }

@@ -23,6 +23,14 @@
         </div>
     </c:if>
 
+    <c:if test="${not empty errorMessage || not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>${not empty errorMessage ? errorMessage : sessionScope.errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <c:remove var="errorMessage" scope="session" />
+    </c:if>
+
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
