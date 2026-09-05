@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+    <dispatch-mode>include</dispatch-mode>
+
+    <!-- Template Bootstrap 5 dùng chung cho toàn bộ website -->
+    <mapping path="/*" decorator="/main.jsp"/>
+
+    <!-- Các đường dẫn không áp dụng decorator -->
+    <mapping path="/image*" exclue="true"/>
+    <mapping path="/assets/*" exclue="true"/>
+    <mapping path="/static/*" exclue="true"/>
+</sitemesh>

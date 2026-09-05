@@ -71,6 +71,13 @@
         <artifactId>commons-io</artifactId>
         <version>2.15.1</version>
     </dependency>
+
+    <!-- SiteMesh 3 (Jakarta EE compatible) -->
+    <dependency>
+        <groupId>org.sitemesh</groupId>
+        <artifactId>sitemesh</artifactId>
+        <version>3.3.0-RC1</version>
+    </dependency>
   </dependencies>
 
   <build>

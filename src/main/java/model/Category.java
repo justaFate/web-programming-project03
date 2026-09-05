@@ -18,6 +18,8 @@ public class Category implements Serializable {
     private int categoryid;
 
     @NotEmpty(message = "Không được phép rỗng")
+    @NotEmpty(message = "Tên danh mục không được để trống")
+    @jakarta.validation.constraints.Size(min = 2, max = 50, message = "Tên danh mục phải từ 2 đến 50 ký tự")
     @Column(name = "CategoryName", columnDefinition = "nvarchar(50) not null")
     private String categoryname;
 
