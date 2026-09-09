@@ -2,7 +2,6 @@ package controller;
 
 import jakarta.servlet.http.HttpSession;
 import model.Category;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,11 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class CategoryController {
 
-    @Autowired
-    private ICategoryService categoryService;
+    private final ICategoryService categoryService;
+
+    public CategoryController(ICategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("/categories")
     public String listCategories(@RequestParam(value = "keyword", required = false) String keyword, Model model) {

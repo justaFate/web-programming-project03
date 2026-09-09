@@ -2,7 +2,6 @@ package controller;
 
 import jakarta.servlet.http.HttpSession;
 import model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,11 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class UserAdminController {
 
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
+    
+    public UserAdminController(IUserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/users")
     public String listUsers(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
