@@ -8,6 +8,5 @@ target/
 .DS_Store
 deploy.sh
 
-# Local email configuration (contains private credentials)
 email.properties
 src/main/resources/email.properties
