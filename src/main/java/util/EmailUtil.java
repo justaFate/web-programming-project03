@@ -4,18 +4,60 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
 
 public class EmailUtil {
 
-    // Cấu hình email (hỗ trợ đọc từ biến môi trường để bảo mật tài khoản)
-    private static final String SMTP_HOST = System.getenv("SMTP_HOST") != null ? System.getenv("SMTP_HOST") : "smtp.gmail.com";
-    private static final String SMTP_PORT = System.getenv("SMTP_PORT") != null ? System.getenv("SMTP_PORT") : "587";
-    private static final String SENDER_EMAIL = System.getenv("SMTP_EMAIL") != null ? System.getenv("SMTP_EMAIL") 
-            : (System.getenv("SENDER_EMAIL") != null ? System.getenv("SENDER_EMAIL") : "webprogramming.edu.vn@gmail.com");
-    private static final String SENDER_PASSWORD = System.getenv("SMTP_PASSWORD") != null ? System.getenv("SMTP_PASSWORD") 
-            : (System.getenv("SENDER_PASSWORD") != null ? System.getenv("SENDER_PASSWORD") : "app_password_here");
+    private static String smtpHost = "smtp.gmail.com";
+    private static String smtpPort = "587";
+    private static String senderEmail = "webprogramming.edu.vn@gmail.com";
+    private static String senderPassword = "app_password_here";
+
+    static {
+        loadConfig();
+    }
+
+    public static void loadConfig() {
+        try (InputStream input = EmailUtil.class.getClassLoader().getResourceAsStream("email.properties")) {
+            if (input != null) {
+                Properties prop = new Properties();
+                prop.load(input);
+                if (prop.getProperty("SMTP_HOST") != null && !prop.getProperty("SMTP_HOST").isBlank()) {
+                    smtpHost = prop.getProperty("SMTP_HOST").trim();
+                }
+                if (prop.getProperty("SMTP_PORT") != null && !prop.getProperty("SMTP_PORT").isBlank()) {
+                    smtpPort = prop.getProperty("SMTP_PORT").trim();
+                }
+                if (prop.getProperty("SMTP_EMAIL") != null && !prop.getProperty("SMTP_EMAIL").isBlank()) {
+                    senderEmail = prop.getProperty("SMTP_EMAIL").trim();
+                }
+                if (prop.getProperty("SMTP_PASSWORD") != null && !prop.getProperty("SMTP_PASSWORD").isBlank()) {
+                    senderPassword = prop.getProperty("SMTP_PASSWORD").trim();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("[EMAIL CONFIG] Không thể nạp email.properties: " + e.getMessage());
+        }
+
+        if (System.getenv("SMTP_HOST") != null && !System.getenv("SMTP_HOST").isBlank()) {
+            smtpHost = System.getenv("SMTP_HOST");
+        }
+        if (System.getenv("SMTP_PORT") != null && !System.getenv("SMTP_PORT").isBlank()) {
+            smtpPort = System.getenv("SMTP_PORT");
+        }
+        if (System.getenv("SMTP_EMAIL") != null && !System.getenv("SMTP_EMAIL").isBlank()) {
+            senderEmail = System.getenv("SMTP_EMAIL");
+        } else if (System.getenv("SENDER_EMAIL") != null && !System.getenv("SENDER_EMAIL").isBlank()) {
+            senderEmail = System.getenv("SENDER_EMAIL");
+        }
+        if (System.getenv("SMTP_PASSWORD") != null && !System.getenv("SMTP_PASSWORD").isBlank()) {
+            senderPassword = System.getenv("SMTP_PASSWORD");
+        } else if (System.getenv("SENDER_PASSWORD") != null && !System.getenv("SENDER_PASSWORD").isBlank()) {
+            senderPassword = System.getenv("SENDER_PASSWORD");
+        }
+    }
 
     /**
      * Sinh mã số OTP ngẫu nhiên gồm 6 chữ số
@@ -33,7 +75,7 @@ public class EmailUtil {
      * Gửi email và in mã OTP rõ ràng ra Console log để kiểm thử nhanh
      */
     public static boolean sendEmail(String toEmail, String subject, String htmlContent) {
-        // Luôn in mã và nội dung ra console để kiểm thử và chấm bài ngay cả khi offline
+        // Luôn in mã và nội dung ra console để kiểm thử 
         System.out.println("================================================================================");
         System.out.println("[EMAIL NOTIFICATION SERVICE]");
         System.out.println("-> Người nhận: " + toEmail);
@@ -45,20 +87,20 @@ public class EmailUtil {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", SMTP_HOST);
-        props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.host", smtpHost);
+        props.put("mail.smtp.port", smtpPort);
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
         try {
             Session session = Session.getInstance(props, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(SENDER_EMAIL, SENDER_PASSWORD);
+                    return new PasswordAuthentication(senderEmail, senderPassword);
                 }
             });
 
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENDER_EMAIL, "Bài Tập 03 - Web Programming", "UTF-8"));
+            message.setFrom(new InternetAddress(senderEmail, "Bài Tập 03 - Web Programming", "UTF-8"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
             message.setContent(htmlContent, "text/html; charset=UTF-8");
