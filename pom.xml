@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>webprog</groupId>
-  <artifactId>project02</artifactId>
+  <artifactId>project03</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
@@ -101,7 +101,7 @@
   </dependencies>
 
   <build>
-    <finalName>project02</finalName>
+    <finalName>project03</finalName>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>

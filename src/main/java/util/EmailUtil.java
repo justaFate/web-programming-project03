@@ -9,11 +9,13 @@ import java.util.Random;
 
 public class EmailUtil {
 
-    // Cấu hình email mặc định (có thể tùy chỉnh nếu có tài khoản SMTP)
-    private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
-    private static final String SENDER_EMAIL = "webprogramming.edu.vn@gmail.com";
-    private static final String SENDER_PASSWORD = "app_password_here";
+    // Cấu hình email (hỗ trợ đọc từ biến môi trường để bảo mật tài khoản)
+    private static final String SMTP_HOST = System.getenv("SMTP_HOST") != null ? System.getenv("SMTP_HOST") : "smtp.gmail.com";
+    private static final String SMTP_PORT = System.getenv("SMTP_PORT") != null ? System.getenv("SMTP_PORT") : "587";
+    private static final String SENDER_EMAIL = System.getenv("SMTP_EMAIL") != null ? System.getenv("SMTP_EMAIL") 
+            : (System.getenv("SENDER_EMAIL") != null ? System.getenv("SENDER_EMAIL") : "webprogramming.edu.vn@gmail.com");
+    private static final String SENDER_PASSWORD = System.getenv("SMTP_PASSWORD") != null ? System.getenv("SMTP_PASSWORD") 
+            : (System.getenv("SENDER_PASSWORD") != null ? System.getenv("SENDER_PASSWORD") : "app_password_here");
 
     /**
      * Sinh mã số OTP ngẫu nhiên gồm 6 chữ số

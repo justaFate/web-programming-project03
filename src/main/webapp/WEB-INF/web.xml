@@ -5,7 +5,7 @@
                              https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
-    <display-name>Project02 - Web Programming</display-name>
+    <display-name>Project03 - Web Programming</display-name>
 
     <welcome-file-list>
         <welcome-file>home</welcome-file>
