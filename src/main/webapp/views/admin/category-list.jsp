@@ -31,6 +31,38 @@
         <c:remove var="errorMessage" scope="session" />
     </c:if>
 
+    <!-- Search Bar -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-3">
+            <form action="<c:url value='/admin/categories'/>" method="get" class="row g-2 align-items-center">
+                <div class="col-md-9 col-sm-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                        </span>
+                        <input type="text" name="keyword" class="form-control border-start-0 ps-0" 
+                               placeholder="Tìm kiếm danh mục theo tên..." value="${keyword}">
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fa-solid fa-search me-1"></i>Tìm kiếm
+                    </button>
+                    <c:if test="${not empty keyword}">
+                        <a href="<c:url value='/admin/categories'/>" class="btn btn-outline-secondary" title="Đặt lại">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </a>
+                    </c:if>
+                </div>
+            </form>
+            <c:if test="${not empty keyword}">
+                <div class="small text-muted mt-2">
+                    <i class="fa-solid fa-filter me-1"></i>Kết quả tìm kiếm cho từ khóa: <strong class="text-dark">"${keyword}"</strong> (Tìm thấy <strong>${listcate.size()}</strong> danh mục)
+                </div>
+            </c:if>
+        </div>
+    </div>
+
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">

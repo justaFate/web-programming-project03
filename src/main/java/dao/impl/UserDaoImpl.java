@@ -161,5 +161,26 @@ public class UserDaoImpl implements IUserDao {
             em.close();
         }
     }
+
+    @Override
+    public List<User> search(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return findAll();
+        }
+        EntityManager em = JPAConfig.getEntityManager();
+        String jpql = "SELECT u FROM User u WHERE " +
+                      "LOWER(u.username) LIKE :kw OR " +
+                      "LOWER(u.fullname) LIKE :kw OR " +
+                      "LOWER(u.email) LIKE :kw OR " +
+                      "u.phone LIKE :kw_raw";
+        try {
+            TypedQuery<User> query = em.createQuery(jpql, User.class);
+            query.setParameter("kw", "%" + keyword.trim().toLowerCase() + "%");
+            query.setParameter("kw_raw", "%" + keyword.trim() + "%");
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
 

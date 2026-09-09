@@ -4,8 +4,10 @@ import java.util.List;
 import dao.ICategoryDao;
 import dao.impl.CategoryDaoImpl;
 import model.Category;
+import org.springframework.stereotype.Service;
 import service.ICategoryService;
 
+@Service
 public class CategoryServiceImpl implements ICategoryService {
     public ICategoryDao cateDao = new CategoryDaoImpl();
 

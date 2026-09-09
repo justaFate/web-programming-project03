@@ -3,10 +3,12 @@ package service.impl;
 import dao.IProductDao;
 import dao.impl.ProductDaoImpl;
 import model.Product;
+import org.springframework.stereotype.Service;
 import service.IProductService;
 
 import java.util.List;
 
+@Service
 public class ProductServiceImpl implements IProductService {
     private IProductDao productDao = new ProductDaoImpl();
 

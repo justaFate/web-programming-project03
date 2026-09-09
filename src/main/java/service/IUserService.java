@@ -18,5 +18,8 @@ public interface IUserService {
     boolean activateAccount(String email, String otp);
     boolean sendForgotPasswordOtp(String emailOrUsername);
     boolean resetPassword(String email, String otp, String newPassword);
+    java.util.List<User> findAll();
+    java.util.List<User> search(String keyword);
+    void delete(int id) throws Exception;
 }
 

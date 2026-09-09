@@ -3,8 +3,12 @@ package service.impl;
 import dao.IUserDao;
 import dao.impl.UserDaoImpl;
 import model.User;
+import org.springframework.stereotype.Service;
 import service.IUserService;
 
+import java.util.List;
+
+@Service
 public class UserServiceImpl implements IUserService {
     private IUserDao userDao = new UserDaoImpl();
 
@@ -208,6 +212,21 @@ public class UserServiceImpl implements IUserService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDao.findAll();
+    }
+
+    @Override
+    public List<User> search(String keyword) {
+        return userDao.search(keyword);
+    }
+
+    @Override
+    public void delete(int id) throws Exception {
+        userDao.delete(id);
     }
 }
 

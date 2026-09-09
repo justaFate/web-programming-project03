@@ -32,6 +32,8 @@ public class FullSystemTestSuite {
         testProductDetail(productService);
         testUserRegisterAndOtpActivation(userService);
         testForgotPasswordAndResetOtp(userService);
+        testCategorySearch(categoryService);
+        testAdminUserCrudAndSearch(userService);
 
         System.out.println("\n=================================================================");
         System.out.println("                    KẾT QUẢ TỔNG HỢP KIỂM THỬ                   ");
@@ -302,6 +304,80 @@ public class FullSystemTestSuite {
 
         } catch (Exception e) {
             assertTrue("testForgotPasswordAndResetOtp", false, "Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // 8. Kiểm tra Tìm kiếm Category
+    private static void testCategorySearch(ICategoryService cateService) {
+        System.out.println("\n--- [TEST 8] Kiểm tra Chức năng Tìm kiếm Category ---");
+        try {
+            List<Category> all = cateService.findAll();
+            if (!all.isEmpty()) {
+                String name = all.get(0).getCategoryname();
+                String searchKw = (name != null && name.length() > 2) ? name.substring(0, 3) : name;
+                List<Category> results = cateService.searchByName(searchKw);
+                assertTrue("Category.SearchByName", results != null && !results.isEmpty(), 
+                        "Tìm kiếm theo từ khóa [" + searchKw + "] trả về: " + (results != null ? results.size() : 0) + " danh mục");
+            } else {
+                assertTrue("Category.SearchByName", true, "Chưa có danh mục nào để tìm kiếm");
+            }
+        } catch (Exception e) {
+            assertTrue("testCategorySearch", false, "Exception: " + e.getMessage());
+        }
+    }
+
+    // 9. Kiểm tra Admin CRUD & Tìm kiếm User
+    private static void testAdminUserCrudAndSearch(IUserService userService) {
+        System.out.println("\n--- [TEST 9] Kiểm tra CRUD và Tìm kiếm User trong Role Admin ---");
+        String uniqueSuffix = String.valueOf(System.currentTimeMillis() % 100000);
+        String username = "admin_u_" + uniqueSuffix;
+        String email = "adminuser" + uniqueSuffix + "@gmail.com";
+
+        try {
+            // Thêm mới
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword("AdminPass123");
+            user.setFullname("Quản Trị Viên Test " + uniqueSuffix);
+            user.setEmail(email);
+            user.setPhone("0987" + String.format("%06d", Integer.parseInt(uniqueSuffix)));
+            user.setRole(1); // Admin
+            user.setStatus(1); // Active
+            user.setImages("avatar.png");
+
+            userService.insert(user);
+            User created = userService.findByUsername(username);
+            assertTrue("AdminUser.Insert", created != null && created.getRole() == 1, 
+                    "Thêm mới Admin User thành công, ID: " + (created != null ? created.getId() : "null"));
+
+            if (created != null) {
+                // Tìm kiếm theo username
+                List<User> searchByUsername = userService.search(username);
+                assertTrue("AdminUser.SearchByUsername", searchByUsername != null && !searchByUsername.isEmpty(), 
+                        "Tìm thấy user qua username [" + username + "]");
+
+                // Tìm kiếm theo họ tên
+                List<User> searchByName = userService.search("Quản Trị Viên Test");
+                assertTrue("AdminUser.SearchByName", searchByName != null && !searchByName.isEmpty(), 
+                        "Tìm thấy user qua họ tên");
+
+                // Cập nhật thông tin và role
+                created.setFullname("Đã Đổi Tên " + uniqueSuffix);
+                created.setRole(0); // đổi sang user
+                userService.update(created);
+
+                User updated = userService.findById(created.getId());
+                assertTrue("AdminUser.Update", updated != null && ("Đã Đổi Tên " + uniqueSuffix).equals(updated.getFullname()) && updated.getRole() == 0,
+                        "Cập nhật thông tin và phân quyền thành công");
+
+                // Xóa
+                userService.delete(created.getId());
+                User deleted = userService.findById(created.getId());
+                assertTrue("AdminUser.Delete", deleted == null, "Xóa Admin User thành công khỏi hệ thống");
+            }
+        } catch (Exception e) {
+            assertTrue("testAdminUserCrudAndSearch", false, "Exception: " + e.getMessage());
             e.printStackTrace();
         }
     }

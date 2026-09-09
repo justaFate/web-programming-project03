@@ -37,6 +37,11 @@
                                 <i class="fa-solid fa-boxes-stacked me-2 text-success"></i>Quản lý Sản phẩm
                             </a>
                         </li>
+                        <li>
+                            <a class="dropdown-item" href="${pageContext.request.contextPath}/admin/users">
+                                <i class="fa-solid fa-users me-2 text-warning"></i>Quản lý Người dùng
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item">
