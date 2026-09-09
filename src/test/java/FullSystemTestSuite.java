@@ -1,12 +1,6 @@
 import java.util.Date;
 import java.util.List;
 
-import dao.ICategoryDao;
-import dao.IProductDao;
-import dao.IUserDao;
-import dao.impl.CategoryDaoImpl;
-import dao.impl.ProductDaoImpl;
-import dao.impl.UserDaoImpl;
 import model.Category;
 import model.Product;
 import model.User;
